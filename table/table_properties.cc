@@ -6,6 +6,7 @@
 #include "rocksdb/table_properties.h"
 #include "rocksdb/iterator.h"
 #include "rocksdb/env.h"
+#include "port/port.h"
 
 namespace rocksdb {
 

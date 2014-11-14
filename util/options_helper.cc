@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include "rocksdb/options.h"
 #include "util/options_helper.h"
+#include "port/port.h"
 
 namespace rocksdb {
 

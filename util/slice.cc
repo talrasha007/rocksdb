@@ -9,6 +9,7 @@
 
 #include "rocksdb/slice_transform.h"
 #include "rocksdb/slice.h"
+#include "port/port.h"
 
 namespace rocksdb {
 
