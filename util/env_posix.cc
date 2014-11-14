@@ -20,7 +20,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
 #include <sys/statfs.h>
 #include <sys/syscall.h>
 #endif
@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) && !defined(CYGWIN)
 #include <linux/fs.h>
 #endif
 #include <signal.h>
@@ -128,7 +128,7 @@ static void TestKillRandom(int odds, const std::string& srcfile,
 
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) && !defined(CYGWIN)
 namespace {
   static size_t GetUniqueIdFromFile(int fd, char* id, size_t max_size) {
     if (max_size < kMaxVarint64Length*3) {
@@ -208,7 +208,7 @@ class PosixSequentialFile: public SequentialFile {
   }
 
   virtual Status InvalidateCache(size_t offset, size_t length) {
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) || defined(CYGWIN)
     return Status::OK();
 #else
     // free OS pages
@@ -269,7 +269,7 @@ class PosixRandomAccessFile: public RandomAccessFile {
     return s;
   }
 
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
   virtual size_t GetUniqueId(char* id, size_t max_size) const {
     return GetUniqueIdFromFile(fd_, id, max_size);
   }
@@ -299,7 +299,7 @@ class PosixRandomAccessFile: public RandomAccessFile {
   }
 
   virtual Status InvalidateCache(size_t offset, size_t length) {
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) || defined(CYGWIN)
     return Status::OK();
 #else
     // free OS pages
@@ -350,7 +350,7 @@ class PosixMmapReadableFile: public RandomAccessFile {
     return s;
   }
   virtual Status InvalidateCache(size_t offset, size_t length) {
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) || defined(CYGWIN)
     return Status::OK();
 #else
     // free OS pages
@@ -604,7 +604,7 @@ class PosixMmapFile : public WritableFile {
   }
 
   virtual Status InvalidateCache(size_t offset, size_t length) {
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) || defined(CYGWIN)
     return Status::OK();
 #else
     // free OS pages
@@ -832,7 +832,7 @@ class PosixWritableFile : public WritableFile {
   }
 
   virtual Status InvalidateCache(size_t offset, size_t length) {
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) || defined(CYGWIN)
     return Status::OK();
 #else
     // free OS pages
@@ -1430,7 +1430,7 @@ class PosixEnv : public Env {
 
   virtual void LowerThreadPoolIOPriority(Priority pool = LOW) override {
     assert(pool >= Priority::LOW && pool <= Priority::HIGH);
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
     thread_pools_[pool].LowerIOPriority();
 #endif
   }
@@ -1535,7 +1535,7 @@ class PosixEnv : public Env {
     }
 
     void LowerIOPriority() {
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
       PthreadCall("lock", pthread_mutex_lock(&mu_));
       low_io_priority_ = true;
       PthreadCall("unlock", pthread_mutex_unlock(&mu_));
@@ -1599,7 +1599,7 @@ class PosixEnv : public Env {
         bool decrease_io_priority = (low_io_priority != low_io_priority_);
         PthreadCall("unlock", pthread_mutex_unlock(&mu_));
 
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
         if (decrease_io_priority) {
           #define IOPRIO_CLASS_SHIFT               (13)
           #define IOPRIO_PRIO_VALUE(class, data)   \
