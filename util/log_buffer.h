@@ -10,6 +10,10 @@
 #include "util/autovector.h"
 #include <ctime>
 
+#ifdef CYGWIN
+#include <sys/time.h>
+#endif
+
 namespace rocksdb {
 
 class Logger;

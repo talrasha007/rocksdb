@@ -17,7 +17,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
-#ifdef OS_LINUX
+#if defined(OS_LINUX) && !defined(CYGWIN)
 #include <linux/falloc.h>
 #endif
 #include "rocksdb/env.h"
