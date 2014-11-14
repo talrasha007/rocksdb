@@ -83,6 +83,12 @@ GENERIC_PORT_FILES=`cd "$ROCKSDB_ROOT"; find port -name '*.cc' | tr "\n" " "`
 
 # On GCC, we pick libc's memcmp over GCC's memcmp via -fno-builtin-memcmp
 case "$TARGET_OS" in
+    CYGWIN_*)
+        PLATFORM=OS_LINUX
+        COMMON_FLAGS="$MEMCMP_FLAG -lpthread -DOS_LINUX -DCYGWIN"
+        PLATFORM_LDFLAGS="-lpthread"
+        PORT_FILE=port/port_posix.cc
+        ;;
     Darwin)
         PLATFORM=OS_MACOSX
         COMMON_FLAGS="$COMMON_FLAGS -DOS_MACOSX"
