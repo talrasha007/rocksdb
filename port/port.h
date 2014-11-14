@@ -19,4 +19,47 @@
 #  include "port/port_posix.h"
 #endif
 
+#ifdef CYGWIN
+#include <stdlib.h>
+#include <sstream>
+#define fileno __sfileno
+#define fread_unlocked fread
+#include "port/port_posix.h"
+
+namespace std {
+	template <class Tdigit>
+	string to_string(Tdigit value)
+	{
+		stringstream stream;
+		stream << value;
+		return stream.str();
+	}
+
+	inline int stoi(const string& str)
+	{
+		return ::atoi(str.c_str());
+	}
+
+	inline int stol(const string& str)
+	{
+		return ::atol(str.c_str());
+	}
+
+	inline int stod(const string& str)
+	{
+		return ::strtod(str.c_str(), NULL);
+	}
+
+	inline uint32_t stoul(const string& str)
+	{
+		return ::strtoul(str.c_str(), NULL, 10);
+	}
+
+	inline uint64_t stoull(const string& str)
+	{
+		return ::strtoull(str.c_str(), NULL, 10);
+	}
+}
+#endif
+
 #endif  // STORAGE_LEVELDB_PORT_PORT_H_
